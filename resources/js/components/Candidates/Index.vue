@@ -5,7 +5,7 @@
             <div class='card'>
                 <div class='card-header'>All Candidates</div>
                 <div class='card-body'>
-                    <router-link :to="{ name: 'create-service' }" class="btn btn-primary">Add Candidate</router-link>
+                    <router-link :to="{ name: 'create-candidate' }" class="btn btn-primary">Add Candidate</router-link>
                     <br/>
                     <br/>
                     <div class="table-responsive">
@@ -18,19 +18,18 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(service, index) in services.data" :key="service.id">
+                                <tr v-for="(candidate, index) in candidates" :key="candidate.id">
                                     <td width="50" class="text-center">{{ index + 1 }}</td>
-                                    <td>{{ service.name }}</td>
+                                    <td>{{ candidate.name }}</td>
                                     <td width="200" class="text-center">
                                         <div class="btn-group">
-                                            <button class="btn btn-danger" @click = "deletePost(service.id)">Delete</button>
+                                            <button class="btn btn-danger" @click = "deletePost(candidate.id)">Delete</button>
                                         </div>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <pagination :data="services" @pagination-change-page="getResults"></pagination>
                 </div>
             </div>
             </div>
@@ -42,21 +41,23 @@
 export default {
     data() {
         return {
-          services: {}
+          candidates: {}
         }
     },
     created() {
             this.getResults();
     },
     methods: {
-        getResults(page){
+        getResults(){
 
-            let uri = 'api/services?page=' + page;
-            this.axios.get(uri).then(response => {
-                        return response.data;
-                    }).then(data => {
-                        this.services = data;
-                    });
+            let uri = 'api/candidates';
+            axios({
+                 method: "get",
+                 url: uri,
+             })
+             .then( response => {
+                 this.candidates = response.data;
+             })
         },
         deletePost(id)
         {
@@ -71,16 +72,20 @@ export default {
                 cancelButtonText: "No, cancel plx!",
                 }).then((result) => {
                 if (result.value) {
-                    this.$swal.fire({
-                        title: 'Success!',
-                        text: 'Service deleted successfully',
-                        icon: 'success',
-                        timer: 1000
-                    });
-                    let uri = `api/service/delete/${id}`;
-                    this.axios.delete(uri).then(response => {
-                        this.getResults();
-                    });
+                    let uri = `api/candidates/delete/${id}`;
+                    axios({
+                         method: "get",
+                         url: uri,
+                     })
+                     .then( response => {
+                       this.getResults();
+                        this.$swal.fire({
+                            title: 'Success!',
+                            text: 'Candidate deleted successfully',
+                            icon: 'success',
+                            timer: 1000
+                        });
+                     })
                 }
             })
         }

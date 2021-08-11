@@ -28,7 +28,7 @@
                                 <div class="col-md-12">
                                     <div class='form-group'>
                                         <label htmlFor='temp_image'>Image</label>
-                                        <input type="file" class="form-control" id="temp_image" v-on:change= "Image">
+                                        <input type="file" class="form-control" id="temp_image" v-on:change= "Image" required="1">
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -42,6 +42,22 @@
                                             </div>
                                             <div class="col-md-3">
                                                 <input type="radio" id="male" value="Female" v-model="candidate.gender"> Female
+                                            </div>
+                                        </div> 
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class='form-group'>
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <label htmlFor='name'>Skills : </label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <div class="row">
+                                                    <div class="col-md-4 mb-3" v-for="skill in skills">
+                                                        <input type="checkbox" :value="skill.value" @change="SkillSet()"> {{skill.text}}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div> 
                                     </div>
@@ -72,16 +88,19 @@
                 candidate:{},
                 errors: [],
                 file: '',
+                skills:[
+                    {text:'Laravel',value:'Laravel'},
+                    {text:'Codeigniter',value:'Codeigniter'},
+                    {text:'Ajax',value:'Ajax'},
+                    {text:'VUE JS',value:'VUE JS'},
+                    {text:'MySQL',value:'MySQL'},
+                    {text:'API',value:'API'},
+                ],
+                candidate_skills : [],
+
             }
         },
         methods: {
-            deleteData(index, candidate_data) {
-                var idx = this.candidate_data_list.indexOf(candidate_data);
-                if (idx > -1) {
-                    this.candidate_data_list.splice(idx, 1);
-                }
-            },
-
             Image(e) {
                 this.file = e.target.files[0];
             },
@@ -90,7 +109,12 @@
                     let uri = '/api/candidates';
                     let data = new FormData();
                     data.append('image', this.file);
-                    let payload = {candidate:this.candidate}
+                    let payload = {
+                        name:this.candidate.name,
+                        email:this.candidate.email,
+                        gender:this.candidate.gender,
+                        candidate_skills:this.candidate_skills,
+                    }
 
                     data.append('data', JSON.stringify(payload));
 
@@ -110,21 +134,21 @@
                             icon: 'success',
                             timer: 1000
                         })
+                         this.$router.push({name: 'home'});
                      })
 
-                    /*this.axios.post(uri, payload,config).then((response) => {
-
-                        this.$swal.fire({
-                            title: 'Success',
-                            text: "candidate created successfully",
-                            icon: 'success',
-                            timer: 1000
-                        })
-                        //this.$router.push({name: 'home'});
-                    });*/
-
                 this.errors = [];
-            }
+            },
+            SkillSet(){
+                if (event.currentTarget.checked == true) {
+                    this.candidate_skills.push({
+                        name: event.currentTarget.value,
+                    });
+                }else if(event.currentTarget.checked == false){
+                    var candidate_skills_index = this.candidate_skills.indexOf(event.currentTarget.value);
+                    this.candidate_skills.splice(candidate_skills_index, 1);
+                }
+            },
         }
     }
 </script>

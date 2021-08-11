@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Candidate;
+use App\CandidateSkill;
 
 class CandidateController extends Controller
 {
@@ -15,9 +16,9 @@ class CandidateController extends Controller
      */
     public function index()
     {
-        $services = \App\Candidate::paginate(10);
+        $candidates = Candidate::all();
 
-        return $services->toJson();
+        return $candidates->toJson();
     }
 
     /**
@@ -46,22 +47,9 @@ class CandidateController extends Controller
             $path = 'storage/images/'.$request->image->getClientOriginalName();
             $data['candidate']['image'] = $path;
         }
-        $candidate->create($data['candidate']);
-       /*$service = Candidate::create( [
-            'name' => $request->name,          
-        ]);
-
-       if($service){
-            $service_data_list = count($request->service_data);
-            for ($i= 1; $i < $service_data_list ; $i++) {
-                $service_data = ServiceData::create( [
-                    'service_id' => $service->id,                
-                    'title' => $request->service_data[$i]['service_data_title'],               
-                ]);
-            }
-        }
-
-        return 1;*/
+        $candidate = $candidate->create($data['candidate']);
+        $candidate->skills()->createMany($data['candidate_skills']);
+        return 1;
     }
 
     /**
@@ -106,20 +94,8 @@ class CandidateController extends Controller
      */
     public function destroy($id)
     {
-        $service = \App\Candidate::find($id);
-        if(!empty($service)){
-            $service->delete();
-            $msg = [
-                'success' => true,
-                'message' => 'Service deleted successfully!'
-            ];
-            return response()->json($msg);
-        } else {
-            $msg = [
-                'success' => false,
-                'message' => 'Service deleted failed!'
-            ];
-            return response()->json($msg);
-        }
+        $candidate = Candidate::find($id);
+        $candidate->delete();
+        return 1;
     }
 }

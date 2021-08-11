@@ -15,4 +15,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 
+Route::get('/candidates/delete/{id}', 'Api\CandidateController@destroy');
 Route::resource('candidates', 'Api\CandidateController');

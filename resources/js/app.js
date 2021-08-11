@@ -17,7 +17,7 @@ Vue.use(VueSweetalert2);
 Vue.use(VueAxios, axios);
 
 import CandidatesIndex from './components/Candidates/Index.vue';
-import ServiceCreate from './components/Candidates/Create.vue';
+import CandidateCreate from './components/Candidates/Create.vue';
 
 const routes = [
   {
@@ -26,9 +26,9 @@ const routes = [
       component: CandidatesIndex
   },
   {
-      name: 'create-service',
-      path: '/service/create',
-      component: ServiceCreate
+      name: 'create-candidate',
+      path: '/candidate/create',
+      component: CandidateCreate
   },
 
 ];

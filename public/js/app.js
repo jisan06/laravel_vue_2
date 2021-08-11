@@ -1975,22 +1975,51 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       candidate: {},
       errors: [],
-      file: ''
+      file: '',
+      skills: [{
+        text: 'Laravel',
+        value: 'Laravel'
+      }, {
+        text: 'Codeigniter',
+        value: 'Codeigniter'
+      }, {
+        text: 'Ajax',
+        value: 'Ajax'
+      }, {
+        text: 'VUE JS',
+        value: 'VUE JS'
+      }, {
+        text: 'MySQL',
+        value: 'MySQL'
+      }, {
+        text: 'API',
+        value: 'API'
+      }],
+      candidate_skills: []
     };
   },
   methods: {
-    deleteData: function deleteData(index, candidate_data) {
-      var idx = this.candidate_data_list.indexOf(candidate_data);
-
-      if (idx > -1) {
-        this.candidate_data_list.splice(idx, 1);
-      }
-    },
     Image: function Image(e) {
       this.file = e.target.files[0];
     },
@@ -2001,7 +2030,10 @@ __webpack_require__.r(__webpack_exports__);
       var data = new FormData();
       data.append('image', this.file);
       var payload = {
-        candidate: this.candidate
+        name: this.candidate.name,
+        email: this.candidate.email,
+        gender: this.candidate.gender,
+        candidate_skills: this.candidate_skills
       };
       data.append('data', JSON.stringify(payload));
       axios({
@@ -2019,18 +2051,22 @@ __webpack_require__.r(__webpack_exports__);
           icon: 'success',
           timer: 1000
         });
-      });
-      /*this.axios.post(uri, payload,config).then((response) => {
-           this.$swal.fire({
-              title: 'Success',
-              text: "candidate created successfully",
-              icon: 'success',
-              timer: 1000
-          })
-          //this.$router.push({name: 'home'});
-      });*/
 
+        _this.$router.push({
+          name: 'home'
+        });
+      });
       this.errors = [];
+    },
+    SkillSet: function SkillSet() {
+      if (event.currentTarget.checked == true) {
+        this.candidate_skills.push({
+          name: event.currentTarget.value
+        });
+      } else if (event.currentTarget.checked == false) {
+        var candidate_skills_index = this.candidate_skills.indexOf(event.currentTarget.value);
+        this.candidate_skills.splice(candidate_skills_index, 1);
+      }
     }
   }
 });
@@ -2085,25 +2121,25 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      services: {}
+      candidates: {}
     };
   },
   created: function created() {
     this.getResults();
   },
   methods: {
-    getResults: function getResults(page) {
+    getResults: function getResults() {
       var _this = this;
 
-      var uri = 'api/services?page=' + page;
-      this.axios.get(uri).then(function (response) {
-        return response.data;
-      }).then(function (data) {
-        _this.services = data;
+      var uri = 'api/candidates';
+      axios({
+        method: "get",
+        url: uri
+      }).then(function (response) {
+        _this.candidates = response.data;
       });
     },
     deletePost: function deletePost(id) {
@@ -2120,17 +2156,19 @@ __webpack_require__.r(__webpack_exports__);
         cancelButtonText: "No, cancel plx!"
       }).then(function (result) {
         if (result.value) {
-          _this2.$swal.fire({
-            title: 'Success!',
-            text: 'Service deleted successfully',
-            icon: 'success',
-            timer: 1000
-          });
-
-          var uri = "api/service/delete/".concat(id);
-
-          _this2.axios["delete"](uri).then(function (response) {
+          var uri = "api/candidates/delete/".concat(id);
+          axios({
+            method: "get",
+            url: uri
+          }).then(function (response) {
             _this2.getResults();
+
+            _this2.$swal.fire({
+              title: 'Success!',
+              text: 'Candidate deleted successfully',
+              icon: 'success',
+              timer: 1000
+            });
           });
         }
       });
@@ -42295,7 +42333,11 @@ var render = function() {
                       _vm._v(" "),
                       _c("input", {
                         staticClass: "form-control",
-                        attrs: { type: "file", id: "temp_image" },
+                        attrs: {
+                          type: "file",
+                          id: "temp_image",
+                          required: "1"
+                        },
                         on: { change: _vm.Image }
                       })
                     ])
@@ -42370,6 +42412,44 @@ var render = function() {
                         ])
                       ])
                     ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-md-12" }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("div", { staticClass: "row" }, [
+                        _vm._m(1),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "col-md-10" }, [
+                          _c(
+                            "div",
+                            { staticClass: "row" },
+                            _vm._l(_vm.skills, function(skill) {
+                              return _c(
+                                "div",
+                                { staticClass: "col-md-4 mb-3" },
+                                [
+                                  _c("input", {
+                                    attrs: { type: "checkbox" },
+                                    domProps: { value: skill.value },
+                                    on: {
+                                      change: function($event) {
+                                        return _vm.SkillSet()
+                                      }
+                                    }
+                                  }),
+                                  _vm._v(
+                                    " " +
+                                      _vm._s(skill.text) +
+                                      "\n                                                "
+                                  )
+                                ]
+                              )
+                            }),
+                            0
+                          )
+                        ])
+                      ])
+                    ])
                   ])
                 ]),
                 _vm._v(" "),
@@ -42390,7 +42470,7 @@ var render = function() {
                     1
                   ),
                   _vm._v(" "),
-                  _vm._m(1)
+                  _vm._m(2)
                 ])
               ]
             )
@@ -42407,6 +42487,14 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "col-md-2" }, [
       _c("label", { attrs: { htmlFor: "name" } }, [_vm._v("Gender : ")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-md-2" }, [
+      _c("label", { attrs: { htmlFor: "name" } }, [_vm._v("Skills : ")])
     ])
   },
   function() {
@@ -42453,7 +42541,7 @@ var render = function() {
                 "router-link",
                 {
                   staticClass: "btn btn-primary",
-                  attrs: { to: { name: "create-service" } }
+                  attrs: { to: { name: "create-candidate" } }
                 },
                 [_vm._v("Add Candidate")]
               ),
@@ -42471,8 +42559,8 @@ var render = function() {
                     _vm._v(" "),
                     _c(
                       "tbody",
-                      _vm._l(_vm.services.data, function(service, index) {
-                        return _c("tr", { key: service.id }, [
+                      _vm._l(_vm.candidates, function(candidate, index) {
+                        return _c("tr", { key: candidate.id }, [
                           _c(
                             "td",
                             {
@@ -42482,7 +42570,7 @@ var render = function() {
                             [_vm._v(_vm._s(index + 1))]
                           ),
                           _vm._v(" "),
-                          _c("td", [_vm._v(_vm._s(service.name))]),
+                          _c("td", [_vm._v(_vm._s(candidate.name))]),
                           _vm._v(" "),
                           _c(
                             "td",
@@ -42498,7 +42586,7 @@ var render = function() {
                                     staticClass: "btn btn-danger",
                                     on: {
                                       click: function($event) {
-                                        return _vm.deletePost(service.id)
+                                        return _vm.deletePost(candidate.id)
                                       }
                                     }
                                   },
@@ -42513,12 +42601,7 @@ var render = function() {
                     )
                   ]
                 )
-              ]),
-              _vm._v(" "),
-              _c("pagination", {
-                attrs: { data: _vm.services },
-                on: { "pagination-change-page": _vm.getResults }
-              })
+              ])
             ],
             1
           )
@@ -57733,8 +57816,8 @@ var routes = [{
   path: '/',
   component: _components_Candidates_Index_vue__WEBPACK_IMPORTED_MODULE_6__["default"]
 }, {
-  name: 'create-service',
-  path: '/service/create',
+  name: 'create-candidate',
+  path: '/candidate/create',
   component: _components_Candidates_Create_vue__WEBPACK_IMPORTED_MODULE_7__["default"]
 }];
 var router = new vue_router__WEBPACK_IMPORTED_MODULE_0__["default"]({
